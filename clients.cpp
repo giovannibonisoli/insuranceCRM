@@ -87,8 +87,11 @@ void Client::setEmail(string _email){
 }
 
 void Client::readInteractions(){
+
     string fileName = "data/interactions" + to_string(clientID) + ".csv";
     createCSVifNotExist(fileName, "type,date,description");
+
+    interactions.clear();
 
     ifstream file(fileName);
     string line;
@@ -97,7 +100,6 @@ void Client::readInteractions(){
     while (getline(file, line)) {
         stringstream ss(line);
         if (i == 0){
-            
             string headers;
             getline(ss, headers, '\n');
         }
@@ -141,9 +143,32 @@ void Client::addInteraction(Interaction newInteraction){
 }
 
 void Client::printInteractions(){
+    cout << endl;
+    cout << "Here are all the interaction of " << name << " " << surname << endl;
+    cout << endl;
     for (Interaction interaction : interactions){
         interaction.printInteraction();
         cout << endl;
+    }
+    cout << endl;
+}
+
+
+void Client::printFilteredInteractions(string type, string date, string description){
+
+    if (interactions.size() > 0){
+        cout << "Interactios of " << name << " " << surname << endl;
+        cout << endl;
+
+        for (Interaction interaction : interactions){
+            if ((!type.empty() && interaction.getType() == type) || 
+                (!date.empty() && interaction.getDate() == date) || 
+                (!description.empty() && interaction.getDescription().find(description) != string::npos)){
+
+                interaction.printInteraction();
+                cout << endl;
+            }
+        }
     }
 }
 
@@ -392,7 +417,6 @@ void ClientsManager::printClients(){
 }
 
 
-
 void ClientsManager::addInteraction(int clientID, string type, string date, string description){
     Client* client = getClientByID(clientID);
     if (client) {
@@ -406,7 +430,6 @@ void ClientsManager::addInteraction(int clientID, string type, string date, stri
 }
 
 
-
 void ClientsManager::printClientInteractions(int clientID){
     Client* client = getClientByID(clientID);
     if (client) {
@@ -414,5 +437,16 @@ void ClientsManager::printClientInteractions(int clientID){
     } 
     else {
         std::cout << "Client not found!" << std::endl;
+    }
+}
+
+
+void ClientsManager::printFilteredInteractions(string type, string date, string description){
+    cout << endl;
+    cout << "Here are the interactions matching to the inserted filters!" << endl;
+    cout << endl;
+    for (Client client : clients){
+        client.printFilteredInteractions(type, date, description);
+        cout << endl;
     }
 }

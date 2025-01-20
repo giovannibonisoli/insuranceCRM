@@ -23,7 +23,7 @@ int main(){
 
     manager.readClients();
 
-
+    cout << endl;
     cout << "Welcome to InsuraPro CRM!" << endl;
     cout << endl;
 
@@ -177,7 +177,7 @@ int main(){
                 }
                 else{
                     
-                    cout << "Email must follow the format dd-mm-yyyy" << endl;
+                    cout << "Date must follow the format dd-mm-yyyy" << endl;
                 }
             }
 
@@ -191,6 +191,47 @@ int main(){
             manager.printClients();
             int clientID = manager.selectClientIDbyInput();
             manager.printClientInteractions(clientID);
+        }
+        else if (optionNumber == 8){
+            // 8. Search interactions
+
+            string type;
+            while (1){
+                cout << "Insert type (Press enter to leave unchanged): ";
+                getline(cin, type);
+
+                if(!type.empty() && (type != "contract" && type != "appointment")){
+                    cout << "Interaction type must be a 'appointment or a 'contract'" << endl;
+                }
+                else{
+                    break;
+                }
+            }
+
+            string date;
+            while (1){
+                cout << "Insert date (Press enter to leave unchanged): ";
+                getline(cin, date);
+
+                if(!date.empty() && !isValidFiscalCode(date)){
+                    cout << "Date must follow the format dd-mm-yyyy" << endl;
+                }
+                else{
+                    break;
+                }
+            }
+
+            string description;
+            cout << "Insert description (Press enter to leave unchanged): ";
+            getline(cin, description);
+
+            if (type.empty() && date.empty() && description.empty()){
+                cout << "No data data inserted for search" << endl;
+            }
+            else{
+                manager.printFilteredInteractions(type, date, description);
+            }
+
         }
         else if (optionNumber == 9){
             // 9. Exit

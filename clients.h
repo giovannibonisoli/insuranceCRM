@@ -64,7 +64,7 @@ class Client{
 
         void printInteractions();
 
-        void filterInteractionsByType(string type);
+        void printFilteredInteractions(string type, string date, string description);
 
         void deleteInteractions();
 
@@ -100,6 +100,8 @@ class ClientsManager{
         void addInteraction(int clientID, string type, string date, string description);
 
         void printClientInteractions(int clientID);
+
+        void printFilteredInteractions(string type, string date, string description);
 };
 
 #endif
