@@ -48,8 +48,6 @@ class Client{
 
         string getEmail();
 
-        vector<Interaction> getInteractions();
-
         // Setter methods. ClientID is not settable, it is unique.
         void setName(string _name);
 
@@ -64,7 +62,9 @@ class Client{
 
         void addInteraction(Interaction newInteraction);
 
-        vector<Interaction> filterInteractionsByType(string type);
+        void printInteractions();
+
+        void filterInteractionsByType(string type);
 
         void deleteInteractions();
 

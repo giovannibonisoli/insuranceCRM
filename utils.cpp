@@ -12,6 +12,11 @@ bool isValidFiscalCode(string fiscalCode){
     return regex_match(fiscalCode, fiscalCodeRegex);
 }
 
+bool isValidDate(string date) {
+    regex datePattern(R"(^(0[1-9]|[12][0-9]|3[01])-(0[1-9]|1[0-2])-(\d{4})$)");
+    return std::regex_match(date, datePattern);
+}
+
 
 int chooseOption(int optionsNumber, string message){
 
@@ -20,7 +25,7 @@ int chooseOption(int optionsNumber, string message){
 
         if (isNumber(input)) {
             int chosenOption = stoi(input);
-            if(chosenOption >= 0 and chosenOption <= optionsNumber){
+            if(chosenOption >= 1 and chosenOption <= optionsNumber){
                 return chosenOption;
             }
             else{
@@ -34,7 +39,7 @@ int chooseOption(int optionsNumber, string message){
 }
 
 
-void createCSVifNotExist(string fileName, string fields){
+void createCSVifNotExist(string fileName, string headers){
     ifstream file(fileName);
     if (!file.is_open()) {
         ofstream newFile(fileName);
@@ -42,7 +47,7 @@ void createCSVifNotExist(string fileName, string fields){
             cerr << "Error while creating the file: " << fileName << endl;
         }
         else{  
-            newFile << fields << endl;
+            newFile << headers << endl;
             newFile.close();
             cout << "File created: " << fileName << endl;
 

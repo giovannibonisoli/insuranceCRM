@@ -10,11 +10,11 @@ void showMainMenu(){
     cout << "4. Delete client" << endl;
     cout << "5. Search client" << endl;
     cout << "6. Add Interaction" << endl;
-    cout << "7. Search Interaction" << endl;
-    cout << "8. Exit" << endl;
+    cout << "7. Visualize client interactions" << endl;
+    cout << "8. Search interactions" << endl;
+    cout << "9. Exit" << endl;
     cout <<  endl;
 }
-
 
 
 
@@ -32,15 +32,9 @@ int main(){
 
         showMainMenu();
 
-        int optionNumber = chooseOption(8, "Choose a menu option: ");
+        int optionNumber = chooseOption(9, "Choose a menu option: ");
 
         if (optionNumber == 1){
-            // 0. Insert the number
-
-            cout << "Insert a number among the available options!" << endl;
-        }
-
-        else if (optionNumber == 1){
             // 1. Show all clients
 
             manager.printClients();
@@ -114,7 +108,7 @@ int main(){
                 getline(cin, newEmail);
 
                 if(!newEmail.empty() && !isValidEmail(newEmail)){
-                    cout << "Email must follow the forma <address>@<domain>.<country> " << endl;
+                    cout << "Email must follow the format <address>@<domain>.<country> " << endl;
                 }
                 else{
                     break;
@@ -159,13 +153,47 @@ int main(){
         else if (optionNumber == 6){
             // 6. Add Interaction
 
+            manager.printClients();
+            int clientID = manager.selectClientIDbyInput();
 
+            string type, date, description;
+            
+            while (1){
+                type = getNotEmptyInput("Insert the interaction type (contract or appointment): ");
+
+                if (type == "contract" || type == "appointment"){
+                    break;
+                }
+                else {
+                    cout << "Interaction type must be a 'appointment or a 'contract'" << endl;
+                }
+            }
+
+
+            while (1){
+                date = getNotEmptyInput("Insert the interaction date (dd-mm-yyyy): ");
+                if(isValidDate(date)){
+                    break;
+                }
+                else{
+                    
+                    cout << "Email must follow the format dd-mm-yyyy" << endl;
+                }
+            }
+
+
+            description = getNotEmptyInput("Insert the interaction description: ");
+            manager.addInteraction(clientID, type, date, description);
         }
         else if (optionNumber == 7){
+            // 7. Visualize client interactions
 
+            manager.printClients();
+            int clientID = manager.selectClientIDbyInput();
+            manager.printClientInteractions(clientID);
         }
-        else if (optionNumber == 8){
-            // 8. Exit
+        else if (optionNumber == 9){
+            // 9. Exit
             cout << "Goodbye!" << endl;
             break;
         }

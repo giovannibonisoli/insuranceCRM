@@ -22,7 +22,7 @@ string Interaction::getDescription(){
 void Interaction::printInteraction(){
     cout << "Type: " << type << endl;
     cout << "Date: " << date << endl;
-    cout << "Description" << description << endl;
+    cout << "Description: " << description << endl;
 }
 
 
@@ -55,9 +55,9 @@ string Client::getEmail(){
     return email;
 }
 
-vector<Interaction> Client::getInteractions(){
-    return interactions;
-}
+// vector<Interaction> Client::getInteractions(){
+//    return interactions;
+//}
 
         // Setter methods. ClientID is not settable, it is unique.
 void Client::setName(string _name){
@@ -97,8 +97,9 @@ void Client::readInteractions(){
     while (getline(file, line)) {
         stringstream ss(line);
         if (i == 0){
-            string fields;
-            getline(ss, fields, '\n');
+            
+            string headers;
+            getline(ss, headers, '\n');
         }
         else{
             string type, date, description;
@@ -111,6 +112,7 @@ void Client::readInteractions(){
 
             interactions.push_back(newInteraction);
         }
+        ++i;
     }
 
     file.close();
@@ -118,7 +120,31 @@ void Client::readInteractions(){
 
 
 void Client::addInteraction(Interaction newInteraction){
-    interactions.push_back(newInteraction);
+    string fileName = "data/interactions" + to_string(clientID) + ".csv";
+
+    ofstream interactionsFile(fileName, ios::app);
+    
+    if (!interactionsFile) {
+        cerr << "Error while opening the file: " << fileName << endl;
+    }
+    else{  
+
+        interactionsFile << newInteraction.getType() << ",";
+        interactionsFile << newInteraction.getDate() << ",";
+        interactionsFile << newInteraction.getDescription() << "\n";
+
+        interactionsFile.close();
+
+        readInteractions();
+    }
+
+}
+
+void Client::printInteractions(){
+    for (Interaction interaction : interactions){
+        interaction.printInteraction();
+        cout << endl;
+    }
 }
 
 
@@ -142,7 +168,7 @@ void Client::printClient(){
 
 
 Client *ClientsManager::getClientByID(int clientID){
-    for (Client client : clients){
+    for (Client& client : clients){
         if(clientID == client.getClientID()){
             return &client;
         }
@@ -263,7 +289,7 @@ void ClientsManager::addClient(string name, string surname, string fiscalCode, s
 
         newClient.readInteractions();
 
-        clients.push_back(newClient);
+        readClients();
     }
 }
 
@@ -273,12 +299,10 @@ void ClientsManager::deleteClient(int clientID){
     if (client) {
 
         client->deleteInteractions();
-        
         int lineIndex = getFileLIneByClientID(clientID);
-
         deleteLine(clientsFilePath, lineIndex);
-
         readClients();
+
     } else {
         std::cout << "Client not found!" << std::endl;
     }    
@@ -372,12 +396,10 @@ void ClientsManager::printClients(){
 void ClientsManager::addInteraction(int clientID, string type, string date, string description){
     Client* client = getClientByID(clientID);
     if (client) {
-
         Interaction newInteraction(type, date, description);
-
         client->addInteraction(newInteraction);
-
-    } 
+        client->readInteractions();
+    }
     else {
         std::cout << "Client not found!" << std::endl;
     }   
@@ -388,10 +410,7 @@ void ClientsManager::addInteraction(int clientID, string type, string date, stri
 void ClientsManager::printClientInteractions(int clientID){
     Client* client = getClientByID(clientID);
     if (client) {
-
-        
-
-        
+        client->printInteractions();
     } 
     else {
         std::cout << "Client not found!" << std::endl;
