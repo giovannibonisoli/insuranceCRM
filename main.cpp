@@ -1,28 +1,6 @@
 #include "clients.h"
 
 
-int chooseOption(int optionsNumber, string message){
-
-    while(1){
-        string input = getNotEmptyInput(message);
-
-        if (isNumber(input)) {
-            int chosenOption = stoi(input);
-            if(chosenOption >= 1 and chosenOption <= optionsNumber){
-                return chosenOption;
-            }
-            else{
-                cout << "Insert a number among the available options!" << endl;
-            }
-        }
-        else{
-            cout << "Insert a valid number!" << endl;
-        }
-    }
-}
-
-
-
 void showMainMenu(){
     cout << "MAIN MENU" << endl;
     cout <<  endl;
@@ -34,10 +12,8 @@ void showMainMenu(){
     cout << "6. Add Interaction" << endl;
     cout << "7. Search Interaction" << endl;
     cout << "8. Exit" << endl;
-
     cout <<  endl;
 }
-
 
 
 
@@ -59,6 +35,12 @@ int main(){
         int optionNumber = chooseOption(8, "Choose a menu option: ");
 
         if (optionNumber == 1){
+            // 0. Insert the number
+
+            cout << "Insert a number among the available options!" << endl;
+        }
+
+        else if (optionNumber == 1){
             // 1. Show all clients
 
             manager.printClients();
@@ -101,11 +83,8 @@ int main(){
 
             manager.printClients();
 
-            vector<int> IDs = manager.getClientsIDs();
+            int clientID = manager.selectClientIDbyInput();
 
-            string message = "Insert the number corresponding to the user you want to edit: ";
-
-            int IDIndex = chooseOption(IDs.size(), message) - 1;
 
             string newName;
             cout << "Insert name (Press enter to leave unchanged): ";
@@ -141,13 +120,13 @@ int main(){
                     break;
                 }
             }
-
             
             if (newName.empty() && newSurname.empty() && 
                 newEmail.empty() && newFiscalCode.empty()){
                     cout << "No data has been modified" << endl;
-            }else{
-                manager.editClient(IDs[IDIndex], newName, newSurname, newFiscalCode, newEmail);
+            }
+            else{
+                manager.editClient(clientID, newName, newSurname, newFiscalCode, newEmail);
             }
             
         }
@@ -155,13 +134,9 @@ int main(){
             // 4. Delete client
 
             manager.printClients();
-            vector<int> IDs = manager.getClientsIDs();
+            int clientID = manager.selectClientIDbyInput();
 
-            string message = "Insert the number corresponding to the user you want to delete: ";
-            int IDIndex = chooseOption(IDs.size(), message) - 1;
-
-            manager.deleteClient(IDs[IDIndex]);
-            manager.readClients();
+            manager.deleteClient(clientID);
         }
         else if (optionNumber == 5){
             // 5. Search client
@@ -180,7 +155,13 @@ int main(){
             else{
                 manager.printFilteredClients(filterName, filterSurname);
             }
+        }
+        else if (optionNumber == 6){
+            // 6. Add Interaction
 
+
+        }
+        else if (optionNumber == 7){
 
         }
         else if (optionNumber == 8){

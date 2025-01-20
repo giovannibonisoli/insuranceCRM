@@ -117,6 +117,11 @@ void Client::readInteractions(){
 }
 
 
+void Client::addInteraction(Interaction newInteraction){
+    interactions.push_back(newInteraction);
+}
+
+
 void Client::deleteInteractions(){
     string fileName = "data/interactions" + to_string(clientID) + ".csv";
     remove(fileName.c_str());
@@ -136,9 +141,18 @@ void Client::printClient(){
 }
 
 
+Client *ClientsManager::getClientByID(int clientID){
+    for (Client client : clients){
+        if(clientID == client.getClientID()){
+            return &client;
+        }
+    }
+
+    return nullptr;
+}
+
 
 int ClientsManager::getFileLIneByClientID(int clientID){
-
     ifstream file(clientsFilePath);
     string line;
 
@@ -170,6 +184,7 @@ int ClientsManager::getFileLIneByClientID(int clientID){
 ClientsManager::ClientsManager(){
     clientsFilePath = "data/clients.csv";
 }
+
 
 void ClientsManager::readClients(){
 
@@ -209,15 +224,12 @@ void ClientsManager::readClients(){
     file.close();
 }
 
-vector<int> ClientsManager::getClientsIDs(){
-    vector<int> IDs;
 
-    for (Client client : clients){
-        IDs.push_back(client.getClientID());
-    }
-
-    return IDs;
+int ClientsManager::selectClientIDbyInput(){
+    int indexClient = chooseOption(clients.size(), "Select the client by the numeric index: ") - 1;
+    return clients[indexClient].getClientID();
 }
+
 
 void ClientsManager::addClient(string name, string surname, string fiscalCode, string email){
 
@@ -255,45 +267,56 @@ void ClientsManager::addClient(string name, string surname, string fiscalCode, s
     }
 }
 
+
 void ClientsManager::deleteClient(int clientID){
+    Client* client = getClientByID(clientID);
+    if (client) {
 
-    for (int i = 0; i < clients.size(); ++i){
-        if(clients[i].getClientID() == clientID){
-            clients[i].deleteInteractions();
-        }
-    }
+        client->deleteInteractions();
+        
+        int lineIndex = getFileLIneByClientID(clientID);
 
-    int lineIndex = getFileLIneByClientID(clientID);
+        deleteLine(clientsFilePath, lineIndex);
 
-    deleteLine(clientsFilePath, lineIndex);
+        readClients();
+    } else {
+        std::cout << "Client not found!" << std::endl;
+    }    
 }
+
 
 void ClientsManager::editClient(int clientID, string name, string surname, string fiscalCode, string email){
 
-    for (int i = 0; i < clients.size(); ++i){
-        if(clients[i].getClientID() == clientID){
-            if (!name.empty()){
-                clients[i].setName(name);
-            }
-            if (!surname.empty()){
-                clients[i].setSurname(surname);
-            }
-            if(!fiscalCode.empty()){
-                clients[i].setFiscalCode(fiscalCode);
-            }
-            if(!email.empty()){
-                clients[i].setEmail(email);
-            }
+    Client* client = getClientByID(clientID);
+    if (client) {
 
-            int lineIndex = getFileLIneByClientID(clientID);
-
-            string contentToReplace = to_string(clientID) + ',' + clients[i].getName();
-            contentToReplace += ',' + clients[i].getSurname() + ',';
-            contentToReplace += clients[i].getFiscalCode() + ',' + clients[i].getEmail();
-
-            overwriteLine(clientsFilePath, lineIndex, contentToReplace);
+        if (!name.empty()){
+            client->setName(name);
         }
-    }
+        if (!surname.empty()){
+            client->setSurname(surname);
+        }
+        if(!fiscalCode.empty()){
+            client->setFiscalCode(fiscalCode);
+        }
+        if(!email.empty()){
+            client->setEmail(email);
+        }
+
+        int lineIndex = getFileLIneByClientID(clientID);
+
+        string contentToReplace = to_string(clientID) + ',' + client->getName();
+        contentToReplace += ',' + client->getSurname() + ',';
+        contentToReplace += client->getFiscalCode() + ',' + client->getEmail();
+
+        overwriteLine(clientsFilePath, lineIndex, contentToReplace);
+
+        readClients();
+
+        
+    } else {
+        std::cout << "Client not found!" << std::endl;
+    }   
 }
 
 
@@ -346,4 +369,31 @@ void ClientsManager::printClients(){
 
 
 
+void ClientsManager::addInteraction(int clientID, string type, string date, string description){
+    Client* client = getClientByID(clientID);
+    if (client) {
 
+        Interaction newInteraction(type, date, description);
+
+        client->addInteraction(newInteraction);
+
+    } 
+    else {
+        std::cout << "Client not found!" << std::endl;
+    }   
+}
+
+
+
+void ClientsManager::printClientInteractions(int clientID){
+    Client* client = getClientByID(clientID);
+    if (client) {
+
+        
+
+        
+    } 
+    else {
+        std::cout << "Client not found!" << std::endl;
+    }
+}

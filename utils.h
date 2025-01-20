@@ -10,6 +10,8 @@ bool isValidEmail(string email);
 
 bool isValidFiscalCode(string fiscalCode);
 
+int chooseOption(int optionsNumber, string message);
+
 void createCSVifNotExist(string fileName, string fields);
 
 void deleteLine(string fileName, int lineIndex);

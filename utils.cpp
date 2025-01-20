@@ -12,6 +12,28 @@ bool isValidFiscalCode(string fiscalCode){
     return regex_match(fiscalCode, fiscalCodeRegex);
 }
 
+
+int chooseOption(int optionsNumber, string message){
+
+    while(1){
+        string input = getNotEmptyInput(message);
+
+        if (isNumber(input)) {
+            int chosenOption = stoi(input);
+            if(chosenOption >= 0 and chosenOption <= optionsNumber){
+                return chosenOption;
+            }
+            else{
+                cout << "Insert a number among the available options!" << endl;
+            }
+        }
+        else{
+            cout << "Insert a valid number!" << endl;
+        }
+    }
+}
+
+
 void createCSVifNotExist(string fileName, string fields){
     ifstream file(fileName);
     if (!file.is_open()) {

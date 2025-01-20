@@ -76,6 +76,8 @@ class ClientsManager{
     string clientsFilePath;
     vector<Client> clients;
 
+    Client *getClientByID(int clientID);
+
     int getFileLIneByClientID(int clientID);
     
     public:
@@ -83,7 +85,7 @@ class ClientsManager{
 
         void readClients();
 
-        vector<int> getClientsIDs();
+        int selectClientIDbyInput();
 
         void addClient(string name, string surname, string fiscalCode, string email);
 
@@ -91,9 +93,11 @@ class ClientsManager{
 
         void editClient(int clientID, string name, string surname, string fiscalCode, string email);
 
+        void printClients();
+
         void printFilteredClients(string filterName, string filterSurname);
 
-        void printClients();
+        void addInteraction(int clientID, string type, string date, string description);
 
         void printClientInteractions(int clientID);
 };
