@@ -2,6 +2,8 @@
 
 
 void showMainMenu(){
+    // Show the main menu options
+
     cout << "MAIN MENU" << endl;
     cout <<  endl;
     cout << "1. Show all clients" << endl;
@@ -32,8 +34,12 @@ int main(){
 
         showMainMenu();
 
-        int optionNumber = chooseOption(9, "Choose a menu option: ");
+        int optionNumber = selectInputOption(9, "Choose a menu option: ");
 
+        if (optionNumber == 0){
+            cout << "Insert a number among the available options!" << endl;
+            cout << endl;
+        }
         if (optionNumber == 1){
             // 1. Show all clients
 
@@ -78,49 +84,50 @@ int main(){
             manager.printClients();
 
             int clientID = manager.selectClientIDbyInput();
-
-
-            string newName;
-            cout << "Insert name (Press enter to leave unchanged): ";
-            getline(cin, newName);
-
-            string newSurname;
-            cout << "Insert surname (Press enter to leave unchanged): ";
-            getline(cin, newSurname);
-
-            string newFiscalCode;
-            while (1){
-                cout << "Insert fiscal code (Press enter to leave unchanged): ";
-                getline(cin, newFiscalCode);
-
-                if(!newFiscalCode.empty() && !isValidFiscalCode(newFiscalCode)){
-                    cout << "Fiscal code must contain 16 ";
-                    cout << "numeric characters or capital letters" << endl;
-                }
-                else{
-                    break;
-                }
-            }
-
-            string newEmail;
-            while (1){
-                cout << "Insert email (Press enter to leave unchanged): ";
-                getline(cin, newEmail);
-
-                if(!newEmail.empty() && !isValidEmail(newEmail)){
-                    cout << "Email must follow the format <address>@<domain>.<country> " << endl;
-                }
-                else{
-                    break;
-                }
-            }
             
-            if (newName.empty() && newSurname.empty() && 
-                newEmail.empty() && newFiscalCode.empty()){
-                    cout << "No data has been modified" << endl;
-            }
-            else{
-                manager.editClient(clientID, newName, newSurname, newFiscalCode, newEmail);
+            if (clientID != -1){
+                string newName;
+                cout << "Insert name (Press enter to leave unchanged): ";
+                getline(cin, newName);
+
+                string newSurname;
+                cout << "Insert surname (Press enter to leave unchanged): ";
+                getline(cin, newSurname);
+
+                string newFiscalCode;
+                while (1){
+                    cout << "Insert fiscal code (Press enter to leave unchanged): ";
+                    getline(cin, newFiscalCode);
+
+                    if(!newFiscalCode.empty() && !isValidFiscalCode(newFiscalCode)){
+                        cout << "Fiscal code must contain 16 ";
+                        cout << "numeric characters or capital letters" << endl;
+                    }
+                    else{
+                        break;
+                    }
+                }
+
+                string newEmail;
+                while (1){
+                    cout << "Insert email (Press enter to leave unchanged): ";
+                    getline(cin, newEmail);
+
+                    if(!newEmail.empty() && !isValidEmail(newEmail)){
+                        cout << "Email must follow the format <address>@<domain>.<country> " << endl;
+                    }
+                    else{
+                        break;
+                    }
+                }
+                
+                if (newName.empty() && newSurname.empty() && 
+                    newEmail.empty() && newFiscalCode.empty()){
+                        cout << "No data has been modified" << endl;
+                }
+                else{
+                    manager.editClient(clientID, newName, newSurname, newFiscalCode, newEmail);
+                }
             }
             
         }
@@ -128,9 +135,12 @@ int main(){
             // 4. Delete client
 
             manager.printClients();
+            
             int clientID = manager.selectClientIDbyInput();
 
-            manager.deleteClient(clientID);
+            if (clientID != -1){
+                manager.deleteClient(clientID);
+            }
         }
         else if (optionNumber == 5){
             // 5. Search client
@@ -144,7 +154,9 @@ int main(){
             getline(cin, filterSurname);
 
             if (filterName.empty() && filterSurname.empty()){
-                cout << "No data data inserted for search" << endl;
+                cout << endl;
+                cout << "No data inserted for search" << endl;
+                cout << endl;
             }
             else{
                 manager.printFilteredClients(filterName, filterSurname);
@@ -156,41 +168,44 @@ int main(){
             manager.printClients();
             int clientID = manager.selectClientIDbyInput();
 
-            string type, date, description;
-            
-            while (1){
-                type = getNotEmptyInput("Insert the interaction type (contract or appointment): ");
+            if (clientID != -1){
+                string type, date, description;
+                
+                while (1){
+                    type = getNotEmptyInput("Insert the interaction type (contract or appointment): ");
 
-                if (type == "contract" || type == "appointment"){
-                    break;
+                    if (type == "contract" || type == "appointment"){
+                        break;
+                    }
+                    else {
+                        cout << "Interaction type must be a 'appointment or a 'contract'" << endl;
+                    }
                 }
-                else {
-                    cout << "Interaction type must be a 'appointment or a 'contract'" << endl;
+
+                while (1){
+                    date = getNotEmptyInput("Insert the interaction date (dd-mm-yyyy): ");
+                    if(isValidDate(date)){
+                        break;
+                    }
+                    else{    
+                        cout << "Date must follow the format dd-mm-yyyy" << endl;
+                    }
                 }
+
+
+                description = getNotEmptyInput("Insert the interaction description: ");
+                manager.addInteraction(clientID, type, date, description);
             }
-
-
-            while (1){
-                date = getNotEmptyInput("Insert the interaction date (dd-mm-yyyy): ");
-                if(isValidDate(date)){
-                    break;
-                }
-                else{
-                    
-                    cout << "Date must follow the format dd-mm-yyyy" << endl;
-                }
-            }
-
-
-            description = getNotEmptyInput("Insert the interaction description: ");
-            manager.addInteraction(clientID, type, date, description);
         }
         else if (optionNumber == 7){
             // 7. Visualize client interactions
 
             manager.printClients();
             int clientID = manager.selectClientIDbyInput();
-            manager.printClientInteractions(clientID);
+
+            if (clientID != -1){
+                manager.printClientInteractions(clientID);
+            }
         }
         else if (optionNumber == 8){
             // 8. Search interactions
@@ -226,7 +241,9 @@ int main(){
             getline(cin, description);
 
             if (type.empty() && date.empty() && description.empty()){
-                cout << "No data data inserted for search" << endl;
+                cout << endl;
+                cout << "No data inserted for search" << endl;
+                cout << endl;
             }
             else{
                 manager.printFilteredInteractions(type, date, description);

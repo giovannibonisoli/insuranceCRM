@@ -55,17 +55,23 @@ string Client::getEmail(){
     return email;
 }
 
-// vector<Interaction> Client::getInteractions(){
-//    return interactions;
-//}
-
-        // Setter methods. ClientID is not settable, it is unique.
+// Setter methods. ClientID is not settable, it is unique.
 void Client::setName(string _name){
-    name = _name;
+    if (_name.empty()){
+        cout << "Name cannot be empty" << endl;
+    }
+    else{
+        name = _name;
+    }
 }
 
 void Client::setSurname(string _surname){
-    surname = _surname;
+    if (_surname.empty()){
+        cout << "Surname cannot be empty" << endl;
+    }
+    else{
+        surname = _surname;
+    }
 }
 
 void Client::setFiscalCode(string _fiscalCode){
@@ -123,7 +129,6 @@ void Client::readInteractions(){
 
 void Client::addInteraction(Interaction newInteraction){
     string fileName = "data/interactions" + to_string(clientID) + ".csv";
-
     ofstream interactionsFile(fileName, ios::app);
     
     if (!interactionsFile) {
@@ -136,35 +141,50 @@ void Client::addInteraction(Interaction newInteraction){
         interactionsFile << newInteraction.getDescription() << "\n";
 
         interactionsFile.close();
-
         readInteractions();
     }
 
 }
 
 void Client::printInteractions(){
-    cout << endl;
-    cout << "Here are all the interaction of " << name << " " << surname << endl;
-    cout << endl;
-    for (Interaction interaction : interactions){
-        interaction.printInteraction();
+
+    if (interactions.size() > 0){
+        cout << endl;
+        cout << "Here are all the interactions of " << name << " " << surname << endl;
+        cout << endl;
+        for (Interaction interaction : interactions){
+            interaction.printInteraction();
+            cout << endl;
+        }
         cout << endl;
     }
-    cout << endl;
+    else{
+        cout << "No interactions have been found for " << name << " " << surname << endl;
+        cout << endl;
+    }
+    
 }
 
 
 void Client::printFilteredInteractions(string type, string date, string description){
 
     if (interactions.size() > 0){
-        cout << "Interactios of " << name << " " << surname << endl;
-        cout << endl;
 
+        vector<Interaction> filteredInteraction;
         for (Interaction interaction : interactions){
             if ((!type.empty() && interaction.getType() == type) || 
                 (!date.empty() && interaction.getDate() == date) || 
                 (!description.empty() && interaction.getDescription().find(description) != string::npos)){
 
+                filteredInteraction.push_back(interaction);
+            }
+        }
+
+
+        if (filteredInteraction.size() != 0){
+            cout << "Client: " << name << " " << surname << endl;
+            cout << endl;
+            for (Interaction interaction : filteredInteraction){
                 interaction.printInteraction();
                 cout << endl;
             }
@@ -277,8 +297,11 @@ void ClientsManager::readClients(){
 
 
 int ClientsManager::selectClientIDbyInput(){
-    int indexClient = chooseOption(clients.size(), "Select the client by the numeric index: ") - 1;
-    return clients[indexClient].getClientID();
+    int indexClient = selectInputOption(clients.size(), "Select a client by the numeric index (0 to exit): ");
+    if(indexClient == 0){
+        return -1;
+    }
+    return clients[indexClient - 1].getClientID();
 }
 
 
@@ -325,7 +348,7 @@ void ClientsManager::deleteClient(int clientID){
 
         client->deleteInteractions();
         int lineIndex = getFileLIneByClientID(clientID);
-        deleteLine(clientsFilePath, lineIndex);
+        deleteCSVLine(clientsFilePath, lineIndex);
         readClients();
 
     } else {
@@ -358,7 +381,7 @@ void ClientsManager::editClient(int clientID, string name, string surname, strin
         contentToReplace += ',' + client->getSurname() + ',';
         contentToReplace += client->getFiscalCode() + ',' + client->getEmail();
 
-        overwriteLine(clientsFilePath, lineIndex, contentToReplace);
+        overwriteCSVLine(clientsFilePath, lineIndex, contentToReplace);
 
         readClients();
 
@@ -383,7 +406,7 @@ void ClientsManager::printFilteredClients(string filterName, string filterSurnam
 
     if (filteredClients.size() != 0){
         cout << endl;
-        cout << "Here are all the inserted clients!" << endl;
+        cout << "Here are the clients matching the filter!" << endl;
         for (int i=0; i < filteredClients.size(); ++i){
             cout << "Client " << i+1 <<  endl;
             filteredClients[i].printClient();
@@ -403,6 +426,7 @@ void ClientsManager::printClients(){
     cout << endl;
     if (clients.size() != 0){
         cout << "Here are all the clients matching the inserted data!" << endl;
+        cout << endl;
         for (int i=0; i < clients.size(); ++i){
             cout << "Client " << i+1 <<  endl;
             clients[i].printClient();
