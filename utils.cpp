@@ -38,7 +38,6 @@ int selectInputOption(int optionsNumber, string message){
         // Check if the input is a number
         if (isNumber(input)) {
 
-            // Convert the input to an integer
             int chosenOption = stoi(input);
 
             // Check if the input is among the available options
@@ -50,7 +49,7 @@ int selectInputOption(int optionsNumber, string message){
             }
         }
         else{
-            cout << "Insert a valid number!" << endl;
+            cout << "Insert a numeric value!" << endl;
         }
     }
 }
@@ -64,6 +63,7 @@ string getNotEmptyInput(string message){
         cout << message;
         getline(cin, input);
 
+        // Check if the input is empty
         if (input.size() == 0){
             cout << "No empty input is allowed!" << endl;
         }
@@ -79,25 +79,31 @@ string getNotEmptyInput(string message){
 
 void createCSVifNotExist(string fileName, string headers){
     ifstream file(fileName);
+
+    // Check if the file exists
     if (!file.is_open()) {
+
+        // Create the file if it does not exist
         ofstream newFile(fileName);
         if (!newFile) {
             cerr << "Error while creating the file: " << fileName << endl;
         }
-        else{  
+        else{ 
+            
             newFile << headers << endl;
             newFile.close();
+
             cout << "File created: " << fileName << endl;
             cout << endl;
-
-            newFile.close();
         }
     }
 }
 
-void deleteLine(string fileName, int lineIndex){
+void deleteCSVLine(string fileName, int lineIndex){
 
     ifstream file(fileName);
+
+    // Check if the file exists
     if (!file.is_open()) {
         cerr << "Error while opening the file: " << fileName << endl;
     }
@@ -106,6 +112,7 @@ void deleteLine(string fileName, int lineIndex){
         vector<string> lines;
         string line;
 
+        // Get all the lines except the one to delete
         int i = 0;
         while (getline(file, line)) {
             if (i != lineIndex){
@@ -121,6 +128,7 @@ void deleteLine(string fileName, int lineIndex){
 
         file.close();
 
+        // Write the lines back to the file
         ofstream file(fileName);
         for (i=0; i<lines.size(); ++i){
             file << lines[i] << endl;
@@ -131,17 +139,17 @@ void deleteLine(string fileName, int lineIndex){
 }
 
 
-void overwriteLine(string fileName, int lineIndex, string contentToReplace){
+void overwriteCSVLine(string fileName, int lineIndex, string contentToReplace){
 
     ifstream file(fileName);
     if (!file.is_open()) {
         cerr << "Error while opening the file: " << fileName << endl;
     }
     else{
-        
         vector<string> lines;
         string line;
 
+        // Get all the lines except the one to overwrite
         int i = 0;
         while (getline(file, line)) {
             if (i != lineIndex){
@@ -153,6 +161,8 @@ void overwriteLine(string fileName, int lineIndex, string contentToReplace){
                 lines.push_back(lineContent);
             }
             else{
+
+                // Replace the line with the new content
                 lines.push_back(contentToReplace);
             }
 
@@ -161,6 +171,7 @@ void overwriteLine(string fileName, int lineIndex, string contentToReplace){
 
         file.close();
 
+        // Write the lines back to the file
         ofstream file(fileName);
         for (i=0; i<lines.size(); ++i){
             file << lines[i] << endl;

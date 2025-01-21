@@ -81,11 +81,17 @@ int main(){
         else if (optionNumber == 3){
             // 3. Edit client
 
+            // Print the clients to allow the user to select the client to edit
             manager.printClients();
 
             int clientID = manager.selectClientIDbyInput();
             
+            // If the clientID is -1, the user has chosen to exit
             if (clientID != -1){
+
+                // Get the new data for the client. 
+                // Empty inputs mean the user does not want to change the data
+
                 string newName;
                 cout << "Insert name (Press enter to leave unchanged): ";
                 getline(cin, newName);
@@ -99,6 +105,7 @@ int main(){
                     cout << "Insert fiscal code (Press enter to leave unchanged): ";
                     getline(cin, newFiscalCode);
 
+                    // If the fiscal code is not empty, check if it is valid
                     if(!newFiscalCode.empty() && !isValidFiscalCode(newFiscalCode)){
                         cout << "Fiscal code must contain 16 ";
                         cout << "numeric characters or capital letters" << endl;
@@ -113,6 +120,7 @@ int main(){
                     cout << "Insert email (Press enter to leave unchanged): ";
                     getline(cin, newEmail);
 
+                    // If the email is not empty, check if it is valid
                     if(!newEmail.empty() && !isValidEmail(newEmail)){
                         cout << "Email must follow the format <address>@<domain>.<country> " << endl;
                     }
@@ -134,10 +142,12 @@ int main(){
         else if (optionNumber == 4){
             // 4. Delete client
 
+            // Print the clients to allow the user to select the client to delete
             manager.printClients();
             
             int clientID = manager.selectClientIDbyInput();
 
+            // If the clientID is -1, the user has chosen to exit
             if (clientID != -1){
                 manager.deleteClient(clientID);
             }
@@ -174,6 +184,7 @@ int main(){
                 while (1){
                     type = getNotEmptyInput("Insert the interaction type (contract or appointment): ");
 
+                    // Validate the type
                     if (type == "contract" || type == "appointment"){
                         break;
                     }
@@ -184,6 +195,8 @@ int main(){
 
                 while (1){
                     date = getNotEmptyInput("Insert the interaction date (dd-mm-yyyy): ");
+
+                    // Validate the date
                     if(isValidDate(date)){
                         break;
                     }
@@ -192,8 +205,9 @@ int main(){
                     }
                 }
 
-
+                // Description must be a non-empty string
                 description = getNotEmptyInput("Insert the interaction description: ");
+                
                 manager.addInteraction(clientID, type, date, description);
             }
         }
@@ -203,7 +217,10 @@ int main(){
             manager.printClients();
             int clientID = manager.selectClientIDbyInput();
 
+            // if the clientID is -1, the user has chosen to exit
             if (clientID != -1){
+
+                // Print the interactions of the selected client
                 manager.printClientInteractions(clientID);
             }
         }
@@ -215,6 +232,7 @@ int main(){
                 cout << "Insert type (Press enter to leave unchanged): ";
                 getline(cin, type);
 
+                // If the type is not empty, check if it is valid
                 if(!type.empty() && (type != "contract" && type != "appointment")){
                     cout << "Interaction type must be a 'appointment or a 'contract'" << endl;
                 }
@@ -228,6 +246,7 @@ int main(){
                 cout << "Insert date (Press enter to leave unchanged): ";
                 getline(cin, date);
 
+                // If the date is not empty, check if it is valid
                 if(!date.empty() && !isValidFiscalCode(date)){
                     cout << "Date must follow the format dd-mm-yyyy" << endl;
                 }
@@ -246,6 +265,8 @@ int main(){
                 cout << endl;
             }
             else{
+
+                // Print the interactions matching the criteria
                 manager.printFilteredInteractions(type, date, description);
             }
 
@@ -257,5 +278,4 @@ int main(){
         }
     }
 
-    // manager.deleteUser(0);
 }

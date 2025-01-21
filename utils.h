@@ -38,7 +38,6 @@ string getNotEmptyInput(string message);
     @param headers The headers to write in the file
 */
 void createCSVifNotExist(string fileName, string headers);
-
 /*
     Function to delete a line in a CSV file
     @param fileName The name of the file to delete the line from

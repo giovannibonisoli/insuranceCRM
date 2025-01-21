@@ -94,6 +94,8 @@ void Client::setEmail(string _email){
 
 void Client::readInteractions(){
 
+    // Create the file with the interaction of the clients if it does not exist
+    // It is identified by the clientID
     string fileName = "data/interactions" + to_string(clientID) + ".csv";
     createCSVifNotExist(fileName, "type,date,description");
 
@@ -106,10 +108,14 @@ void Client::readInteractions(){
     while (getline(file, line)) {
         stringstream ss(line);
         if (i == 0){
+
+            // Skip the headers
             string headers;
             getline(ss, headers, '\n');
         }
         else{
+
+            // Read the interaction data
             string type, date, description;
 
             getline(ss, type, ',');
@@ -117,7 +123,6 @@ void Client::readInteractions(){
             getline(ss, description, '\n');
 
             Interaction newInteraction(type, date, description);
-
             interactions.push_back(newInteraction);
         }
         ++i;
@@ -128,6 +133,8 @@ void Client::readInteractions(){
 
 
 void Client::addInteraction(Interaction newInteraction){
+
+    // Open the interaction file in append mode
     string fileName = "data/interactions" + to_string(clientID) + ".csv";
     ofstream interactionsFile(fileName, ios::app);
     
@@ -141,6 +148,8 @@ void Client::addInteraction(Interaction newInteraction){
         interactionsFile << newInteraction.getDescription() << "\n";
 
         interactionsFile.close();
+
+        // Call readInteractions to update the interactions vector
         readInteractions();
     }
 
@@ -152,6 +161,8 @@ void Client::printInteractions(){
         cout << endl;
         cout << "Here are all the interactions of " << name << " " << surname << endl;
         cout << endl;
+
+        // Print all the interactions
         for (Interaction interaction : interactions){
             interaction.printInteraction();
             cout << endl;
@@ -170,6 +181,7 @@ void Client::printFilteredInteractions(string type, string date, string descript
 
     if (interactions.size() > 0){
 
+        // Filter the interactions based on the criteria
         vector<Interaction> filteredInteraction;
         for (Interaction interaction : interactions){
             if ((!type.empty() && interaction.getType() == type) || 
@@ -180,7 +192,7 @@ void Client::printFilteredInteractions(string type, string date, string descript
             }
         }
 
-
+        // Print the filtered interactions if any has been found
         if (filteredInteraction.size() != 0){
             cout << "Client: " << name << " " << surname << endl;
             cout << endl;
@@ -194,6 +206,8 @@ void Client::printFilteredInteractions(string type, string date, string descript
 
 
 void Client::deleteInteractions(){
+
+    // Delete the file with the interactions of the client
     string fileName = "data/interactions" + to_string(clientID) + ".csv";
     remove(fileName.c_str());
  
@@ -223,7 +237,7 @@ Client *ClientsManager::getClientByID(int clientID){
 }
 
 
-int ClientsManager::getFileLIneByClientID(int clientID){
+int ClientsManager::getCSVLineByClientID(int clientID){
     ifstream file(clientsFilePath);
     string line;
 
@@ -232,14 +246,19 @@ int ClientsManager::getFileLIneByClientID(int clientID){
     while (getline(file, line)) {
         stringstream ss(line);
         if (i == 0){
+
+            // Skip the headers
             string fields;
             getline(ss, fields, '\n');
         }
         else{
+            
             string strID;
             getline(ss, strID, ',');
 
             int currentID = stoi(strID);
+
+            // If the clientID is found, return the line number
             if (currentID == clientID){
                 file.close();
                 return i;
@@ -260,6 +279,8 @@ ClientsManager::ClientsManager(){
 void ClientsManager::readClients(){
 
     clients.clear();
+
+    // Create the file with the clients if it does not exist
     createCSVifNotExist(clientsFilePath, "clientID,name,surname,fiscalCode,email");
 
     ifstream file(clientsFilePath);
@@ -269,8 +290,10 @@ void ClientsManager::readClients(){
     while (getline(file, line)) {
         stringstream ss(line);
         if (i == 0){
-            string fields;
-            getline(ss, fields, '\n');
+
+            // Skip the headers
+            string headers;
+            getline(ss, headers, '\n');
         }
         else{
             int clientID;
@@ -285,6 +308,7 @@ void ClientsManager::readClients(){
             clientID = stoi(strID);
             Client newClient(clientID, name, surname, fiscalCode, email);
 
+            // Once the client is created, call this function to create the interaction CSV file
             newClient.readInteractions();
 
             clients.push_back(newClient);
@@ -297,10 +321,15 @@ void ClientsManager::readClients(){
 
 
 int ClientsManager::selectClientIDbyInput(){
-    int indexClient = selectInputOption(clients.size(), "Select a client by the numeric index (0 to exit): ");
+    string message = "Select a client by the numeric index (0 to exit): ";
+
+    int indexClient = selectInputOption(clients.size(), message);
+
+    // 0 as return value is treated as an option to exit
     if(indexClient == 0){
         return -1;
     }
+
     return clients[indexClient - 1].getClientID();
 }
 
@@ -316,6 +345,7 @@ void ClientsManager::addClient(string name, string surname, string fiscalCode, s
 
         int newID = 0;
 
+        // If there are clients, find the highest ID and increment it to create a new one
         if (clients.size() != 0){
             for (int i=0; i<clients.size(); ++i){
                 int currentID = clients[i].getClientID();
@@ -323,11 +353,10 @@ void ClientsManager::addClient(string name, string surname, string fiscalCode, s
                     newID = currentID;
                 }
             }
-
             ++newID;
         }
 
-        Client newClient(newID, name, surname, fiscalCode, email);
+        // Write the new client to the CSV file
         clientsFile << newID << ",";
         clientsFile << name << ",";
         clientsFile << surname << ",";
@@ -335,8 +364,12 @@ void ClientsManager::addClient(string name, string surname, string fiscalCode, s
         clientsFile << email << endl;
         clientsFile.close();
 
+        Client newClient(newID, name, surname, fiscalCode, email);
+
+        // Once the client is created, call this function to create the interaction CSV file
         newClient.readInteractions();
 
+        // Call readClients to update the clients vector
         readClients();
     }
 }
@@ -345,10 +378,14 @@ void ClientsManager::addClient(string name, string surname, string fiscalCode, s
 void ClientsManager::deleteClient(int clientID){
     Client* client = getClientByID(clientID);
     if (client) {
-
+        // Before deleting the client, delete the interactions CSV file
         client->deleteInteractions();
-        int lineIndex = getFileLIneByClientID(clientID);
+
+        // Delete the client from the clients CSV file
+        int lineIndex = getCSVLineByClientID(clientID);
         deleteCSVLine(clientsFilePath, lineIndex);
+
+        // Call readClients to update the clients vector
         readClients();
 
     } else {
@@ -375,7 +412,8 @@ void ClientsManager::editClient(int clientID, string name, string surname, strin
             client->setEmail(email);
         }
 
-        int lineIndex = getFileLIneByClientID(clientID);
+        // OverWrite the line in the CSV file corresponding to the client with the new data
+        int lineIndex = getCSVLineByClientID(clientID);
 
         string contentToReplace = to_string(clientID) + ',' + client->getName();
         contentToReplace += ',' + client->getSurname() + ',';
@@ -383,6 +421,7 @@ void ClientsManager::editClient(int clientID, string name, string surname, strin
 
         overwriteCSVLine(clientsFilePath, lineIndex, contentToReplace);
 
+        // Call readClients to update the clients vector
         readClients();
 
         
@@ -396,6 +435,7 @@ void ClientsManager::printFilteredClients(string filterName, string filterSurnam
     
     vector<Client> filteredClients;
 
+    // Filter the clients based on the criteria
     for (Client client : clients){
         if ((!filterName.empty() && client.getName().find(filterName) != string::npos) || 
             (!filterSurname.empty() && client.getSurname().find(filterSurname) != string::npos)){
@@ -403,7 +443,7 @@ void ClientsManager::printFilteredClients(string filterName, string filterSurnam
         }
     }
 
-
+    // Print the filtered clients if any has been found
     if (filteredClients.size() != 0){
         cout << endl;
         cout << "Here are the clients matching the filter!" << endl;
@@ -424,8 +464,9 @@ void ClientsManager::printFilteredClients(string filterName, string filterSurnam
 void ClientsManager::printClients(){
 
     cout << endl;
+
     if (clients.size() != 0){
-        cout << "Here are all the clients matching the inserted data!" << endl;
+        cout << "Here are all the inserted clients!" << endl;
         cout << endl;
         for (int i=0; i < clients.size(); ++i){
             cout << "Client " << i+1 <<  endl;
@@ -443,10 +484,13 @@ void ClientsManager::printClients(){
 
 void ClientsManager::addInteraction(int clientID, string type, string date, string description){
     Client* client = getClientByID(clientID);
+
     if (client) {
         Interaction newInteraction(type, date, description);
+
+        // Add the interaction to the client
         client->addInteraction(newInteraction);
-        client->readInteractions();
+
     }
     else {
         std::cout << "Client not found!" << std::endl;

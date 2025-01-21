@@ -114,25 +114,25 @@ class Client {
         // Setter methods. ClientID is not settable, as it is unique.
 
         /*
-            Updates the client's first name.
+            Updates the client's first name, ensuring it is not empty.
             @param _name The new first name of the client.
         */
         void setName(string _name);
 
         /*
-            Updates the client's last name.
+            Updates the client's last name, ensuring it is not empty.
             @param _surname The new surname of the client.
         */
         void setSurname(string _surname);
 
         /*
-            Updates the client's fiscal code, by validating the format.
+            Updates the client's fiscal code, validating the format.
             @param _fiscalCode The new fiscal code of the client.
         */
         void setFiscalCode(string _fiscalCode);
 
         /*
-            Updates the client's email address, by validating the format.
+            Updates the client's email address, validating the format.
             @param _email The new email address of the client.
         */
         void setEmail(string _email);
@@ -203,7 +203,7 @@ class ClientsManager {
         @param clientID The ID of the client.
         @return The line number in the file where the client is stored.
     */
-    int getFileLIneByClientID(int clientID);
+    int getCSVLineByClientID(int clientID);
 
     public:
         // Default contructor
